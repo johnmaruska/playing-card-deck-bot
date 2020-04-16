@@ -1,7 +1,9 @@
 var Discord = require('discord.js');
 var auth = require('./auth.json');
 var Deck = require('./deck');
-var { displayArray, parse, standardReply, withReason } = require('./message');
+var {
+  deckTooSmall, displayArray, parse, standardReply, withReason
+} = require('./message');
 
 const client = new Discord.Client();
 
@@ -14,8 +16,10 @@ deck.shuffle();
 
 const peek = (command) => {
   const n = command.options[0];
-  const result = deck.peek(n);
-  return standardReply(command, result);
+  if (n <= deck.length())
+    return standardReply(command, displayArray(deck.peek(n)));
+  else
+    return deckTooSmall(command, deck.length());
 };
 
 const shuffle = (command) => {
@@ -27,11 +31,10 @@ const shuffle = (command) => {
 
 const draw = (command) => {
   const n = command.options[0];
-  if (n <= deck.length()) {
-    const result = deck.draw(n);
-    return standardReply(command, result);
-  } else
-    return withReason(`${command.word} ${command.options} - Deck has only ${deck.length()} cards remaining.`);
+  if (n <= deck.length())
+    return standardReply(command, displayArray(deck.draw(n)));
+  else
+    return deckTooSmall(command, deck.length());
 };
 
 const reply = (original, message) => (

@@ -28,10 +28,13 @@ const parse = (msg) => {
 const tick = (msg) => `\`${msg}\``;
 const displayArray = (arr) => arr.map(tick).join(", ");
 const withReason = (message, reason) => reason ? `${message} - Reason: ${tick(reason)}` : message;
+const deckTooSmall = (command, cardsRemaining) => (
+  withReason(`${command.word} ${command.options} - Deck has only ${cardsRemaining} cards remaining.`)
+);
 
 const standardReply = (command, result) => {
-  const message = `${command.word} ${command.options} - Result: ${displayArray(result)}`;
-  return command.comment ? withReason(message, command.comment) : message;
+  const message = `${command.word} ${command.options} - Result: ${result}`;
+  return withReason(message, command.comment);
 };
 
-module.exports = { displayArray, parse, standardReply, withReason };
+module.exports = { deckTooSmall, displayArray, parse, standardReply, withReason };
