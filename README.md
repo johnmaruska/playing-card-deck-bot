@@ -7,7 +7,7 @@ of playing cards.
 
 `!shuffle [wJ]` shuffle the deck, optionally including joker cards
 
-`!peak <n>` where `<n>` is the number of cards to peek at
+`!peek <n>` where `<n>` is the number of cards to peek at
 
 `!draw <n>` where `<n>` is the number of cards to draw
 
