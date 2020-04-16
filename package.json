@@ -1,0 +1,15 @@
+{
+  "name": "playing-cards-deck-bot",
+  "author": "John Maruska",
+  "version": "1.0.0",
+  "description": "Playing Card Deck-bot for discord Deadlands fun",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "nodemon bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.1.1",
+    "nodemon": "^2.0.3"
+  }
+}
