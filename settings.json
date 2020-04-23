@@ -1,0 +1,7 @@
+{
+  "prefix": "!",
+  "bot-name": "CustomRngBot",
+  "extension-folders": [
+    "src/discord/extensions"
+  ]
+}
