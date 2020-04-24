@@ -1,22 +1,41 @@
 (ns discordian.core
-  (:require [discordian.deck :as deck
-             discord.bot :as bot]))
-
-(def playing-cards (deck/shuffle :with-jokers true))
+  (:require [discordian.deck.command :as deck]
+            [discord.bot :as bot]))
 
 (defn parse [content]
   (let [[opts comment] (clojure.string/split content " ! ")]
     {:comment comment
      :options (clojure.string/split opts " ")}))
 
-(bot/defcommand peek
-  [client message])
+;; parse, execute, reply
 
-(bot/defcommand draw
-  [client message]
-  (let [{:keys [comment options]} (parse (:content message))
-        n (int (first (options)))]
-    (deck/draw! playing-cards n)))
+(defn reply* [message result]
+  (println ;; bot/say
+   (format "@%s - %s" (:author message) result)))
 
-(bot/defcommand shuffle
-  [client message])
+(defmacro execute [body]
+  `(try ~body (catch Exception e# (str "caught exception " (.getMessage e#)))))
+
+(defmacro reply [command message body]
+  `(reply* ~message (->output ~command ~message (execute ~body))))
+
+(defn ->output
+  [command message result]
+  (format "%s%s - Result: %s%s"
+          command
+          (if-let [options (:options message)] (str " " options) "")
+          result
+          (if-let [comment (:comment message)] (str " ! " comment) "")))
+
+(defmacro defcommand [name f]
+  `(bot/defcommand ~name
+     [client# message#]
+     (let [{:keys [comment# options#] :as msg} (parse :content message#)]
+       (reply (str ~name) message# (f options# comment#)))))
+
+;; TODO: formatting message results, replying
+
+;; TODO: use an extension instead, e.g. `!deck draw n`
+(defcommand peek deck/peek)
+(defcommand draw deck/draw)
+(defcommand shuffle deck/shuffle)
