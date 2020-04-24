@@ -1,4 +1,4 @@
-(ns bot.deck)
+(ns discordian.deck)
 
 (def red-suits ["Hearts" "Diamonds"])
 (def black-suits ["Clubs" "Spades"])

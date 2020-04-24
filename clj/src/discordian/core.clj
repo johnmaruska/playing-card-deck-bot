@@ -1,4 +1,4 @@
-(ns bot.core
+(ns discordian.core
   (:require [discordian.deck :as deck
              discord.bot :as bot]))
 
