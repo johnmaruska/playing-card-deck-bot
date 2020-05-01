@@ -1,0 +1,8 @@
+{
+    "token" : "TOKEN_HERE",
+    "prefix" : "!",
+    "bot-name" : "Discordian",
+    "extension-folders" : [
+        "src/discordian/extensions"
+    ]
+}

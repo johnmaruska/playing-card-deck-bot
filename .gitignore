@@ -8,6 +8,7 @@ clj/.lein-failures
 clj/.nrepl-port
 clj/str
 clj/target
+clj/data/settings/settings.json
 
 # emacs
 *~
