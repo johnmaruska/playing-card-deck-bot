@@ -37,5 +37,5 @@
 
 (defn get-value [term]
   (if (number? term)
-    {:raw-rolls [term] :kept-rolls [term] :result term}
+    {:raw-rolls term :kept-rolls term :result term}
     (roll term)))
