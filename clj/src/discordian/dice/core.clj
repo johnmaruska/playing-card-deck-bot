@@ -3,40 +3,38 @@
 (defn- exploded? [result explode-on]
   (and explode-on (= result explode-on)))
 
-(defn- roll-d [faces & {:keys [explode-on] :as opts}]
+(defn- roll-d [faces & {:keys [explode-on]}]
   (loop [coll []]
     (let [result  (+ 1 (rand-int faces))
           results (conj coll result)]
       (if (exploded? result explode-on)
         (recur results)
-        results))))
+        (if (= 1 (count results))
+          (first results)
+          results)))))
 
 (defn value [result]
   (if (sequential? result)
     (reduce + result)
     result))
-
-(value 12)
-(value [12 12 1])
-
+;; TODO: honor best/worst
 (defn keeps [rolls k drp]
   (cond->> (sort-by (comp - value) rolls)
-    drp (drop drp)
-    k   (take k)))
-
-(keeps [12] 1 nil)
-(keeps [12 12 1] 1 nil)
+    drp (drop (:n drp))
+    k   (take (:n k))))
 
 (defn roll
-  [{:keys [n d e k drp modifier]
-    :or   {n 1 modifier 0}
-    :as   opts}]
-  {:pre [(int? d)
-         (every? #(or (int? %1) (nil? %1)) [n e k drp modifier])]}
+  [{:keys [n d e k D] :or {n 1}}]
+  {:pre [(every? int? [n d])
+         (or (int? e) (nil? e))
+         (every? #(or (nil? %1) (int? (:n %1))) [k D])]}
   (let [rolls      (vec (repeatedly n #(roll-d d :explode-on e)))
-        kept-rolls (vec (keeps rolls k drp))]
+        kept-rolls (vec (keeps rolls k D))]
     {:raw-rolls  rolls
      :kept-rolls kept-rolls
-     :result     (+ modifier (reduce + (flatten kept-rolls)))}))
+     :result     (reduce + (flatten kept-rolls))}))
 
-(roll {:n 5 :d 12 :e 12 :k 4 :drp 2 :modifier 3})
+(defn get-value [term]
+  (if (number? term)
+    term
+    (roll term)))

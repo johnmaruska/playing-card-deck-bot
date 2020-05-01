@@ -1,13 +1,21 @@
 (ns discordian.core
   (:require [discordian.deck.command :as deck]
+            [discordian.dice.command :as dice]
             [discord.bot :as bot])
   (:refer-clojure :exclude [peek shuffle]))
 
+(defn words [str]
+  (clojure.string/split str #" "))
+
+(defn separate-comment [content]
+  (let [[statement comment] (clojure.string/split content #" ! ")]
+    {:statement statement :comment comment }))
+
 (defn parse [content]
-  (let [[opts comment] (clojure.string/split content #" ! ")]
-    {:command (first (clojure.string/split opts #" "))
+  (let [{:keys [statement comment]} (separate-comment content)]
+    {:command (first (words statement))
      :comment comment
-     :options (clojure.string/join " " (rest (clojure.string/split opts #" ")))}))
+     :options (clojure.string/join " " (rest (words statement)))}))
 
 ;; parse, execute, reply
 
@@ -19,7 +27,7 @@
 (defn ->output
   [message result & {:keys [type]}]
   (let [{:keys [command options comment]} message]
-    (format (str "%s %s - " (if (= type :command) "" "Result: ") "`%s` %s")
+    (format (str "%s %s - " (if (= type :no-val) "" "Result: ") "`%s` %s")
             command options result
             (if comment (format " Reason: %s" comment) ""))))
 
@@ -35,11 +43,13 @@
 (bot/defextension deck [client message]
   (:peek    (execute-command deck/peek    message))
   (:draw    (execute-command deck/draw    message))
-  (:shuffle (execute-command deck/shuffle message :type :command))
-  (:init    (execute-command deck/init!   message :type :command)))
+  (:shuffle (execute-command deck/shuffle message :type :no-val))
+  (:init    (execute-command deck/init!   message :type :no-val)))
 
 (bot/defcommand roll [client message]
-  )
+  (let [{:keys [statement comment]} (separate-comment (:content message))
+        msg {:command "roll" :options statement :comment comment}]
+    (reply message (->output msg (dice/roll statement)))))
 
 (defn -main
   "Starts a Discord bot."
