@@ -13,25 +13,26 @@
 
 ;;; deck methods
 
-(defn init-standard [] (atom {:options {:with-jokers false}
-                              :cards sut/standard-deck}))
+(defn init-standard []
+  (atom {:options {:with-jokers false}
+         :cards sut/standard-deck}))
 
 (deftest too-small?
-(let [deck (init-standard)]
-  (testing "too-small? false when deck not too small"
-    (is (false? (sut/too-small? deck 10))))
-  (testing "too-small? true when deck is too small"
-    (is (true? (sut/too-small? deck 60))))))
+  (let [deck (init-standard)]
+    (testing "too-small? false when deck not too small"
+      (is (false? (sut/too-small? deck 10))))
+    (testing "too-small? true when deck is too small"
+      (is (true? (sut/too-small? deck 60))))))
 
 (deftest peek
-(let [deck (init-standard)]
-  (testing "peek is from the beginning of the deck"
-    (is (= [{:suit "Diamonds", :rank "Ace", :color "Red"}
-            {:suit "Diamonds", :rank "Two", :color "Red"}
-            {:suit "Diamonds", :rank "Three", :color "Red"}]
-           (sut/peek deck 3))))
-  (testing "peek does something when too many"
-    (is (thrown? java.lang.IndexOutOfBoundsException (sut/peek deck 60))))))
+  (let [deck (init-standard)]
+    (testing "peek is from the beginning of the deck"
+      (is (= [{:suit "Diamonds", :rank "Ace", :color "Red"}
+              {:suit "Diamonds", :rank "Two", :color "Red"}
+              {:suit "Diamonds", :rank "Three", :color "Red"}]
+             (sut/peek deck 3))))
+    (testing "peek does something when too many"
+      (is (thrown? java.lang.IndexOutOfBoundsException (sut/peek deck 60))))))
 
 (deftest draw!
   (let [deck (init-standard)]
@@ -40,10 +41,12 @@
               {:suit "Diamonds", :rank "Two", :color "Red"}
               {:suit "Diamonds", :rank "Three", :color "Red"}]
              (sut/draw! deck 3)))
-      (is (= 49 (sut/remaining deck))))
+      (is (= 49 (sut/remaining deck)))
+      (is (= 3  (sut/discarded deck))))
     (testing "draw! does something when the deck is expended"
       (sut/draw! deck (sut/remaining deck))
-      (is (= [] (:cards @deck))))
+      (is (= 0  (sut/remaining deck)))
+      (is (= 52 (sut/discarded deck))))
     (testing "draw! does something when too many"
       (is (thrown? java.lang.IndexOutOfBoundsException (sut/draw! deck 60))))))
 
