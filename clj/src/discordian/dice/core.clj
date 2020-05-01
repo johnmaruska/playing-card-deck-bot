@@ -17,6 +17,7 @@
   (if (sequential? result)
     (reduce + result)
     result))
+
 ;; TODO: honor best/worst
 (defn keeps [rolls k drp]
   (cond->> (sort-by (comp - value) rolls)
@@ -36,5 +37,5 @@
 
 (defn get-value [term]
   (if (number? term)
-    term
+    {:raw-rolls [term] :kept-rolls [term] :result term}
     (roll term)))
