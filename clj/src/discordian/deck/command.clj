@@ -25,8 +25,11 @@
   (let [n (:n (opts/retrieve-parse options))]
     (retrieve deck/draw! playing-cards n)))
 
-(defn shuffle [] (deck/shuffle! playing-cards))
+(defn shuffle [& [_options]]
+  (deck/shuffle! playing-cards)
+  "Existing deck has been shuffled.")
 
 (defn init! [options]
   (let [opts (opts/init-parse options)]
-    (reset! playing-cards @(apply deck/init (flatten (vec opts))))))
+    (reset! playing-cards @(apply deck/init (flatten (vec opts))))
+    (str "Initialized a new deck with options " opts)))
