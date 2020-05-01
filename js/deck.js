@@ -19,50 +19,61 @@ class Card {
   }
 }
 
+const SUITS = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
+const RANKS = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King'];
+
 class Deck {
   // default order
-  suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
-  ranks = ['Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King'];
-  deck = [];
-  drawnCards = [];
   constructor() {
-    this.suits.forEach(
-      (suit) => this.ranks.forEach(
+    this.deck = [];
+    this.drawnCards = [];
+    SUITS.forEach(
+      (suit) => RANKS.forEach(
         (rank) => this.deck.push(new Card(suit, rank))
       )
     );
     this.deck.push(new Card("Joker", null, true, "Black"));
     this.deck.push(new Card("Joker", null, true, "Red"));
+
+    // caveman bindings
+    this.length = this.length.bind(this);
+    this.shuffle = this.shuffle.bind(this);
+    this.reshuffle = this.reshuffle.bind(this);
+    this.peek = this.peek.bind(this);
+    this.drawCard = this.drawCard.bind(this);
+    this.draw = this.draw.bind(this);
   }
 
-  length = () => this.deck.length
+  length() { return this.deck.length; }
 
   //http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-  shuffle = () => {
+  shuffle() {
     for (let i = this.deck.length - 1; i > 0; i--) {
       let j = Math.floor(Math.random() * (i + 1));
       let swap = this.deck[i];
       this.deck[i] = this.deck[j];
       this.deck[j] = swap;
     }
+    return this.deck;
   }
 
-  reshuffle = () => {
+  reshuffle() {
     this.drawnCards.forEach((card) => this.deck.push(card));
     this.drawnCards = [];
-    this.shuffle();
+    return this.shuffle();
   }
 
-  peek = (n = 1) => this.deck.slice(0, n);
+  peek(n = 1) { return this.deck.slice(0, n); }
 
-  drawCard = () => {
+  drawCard() {
     let card = this.deck.shift();
     this.drawnCards.push(card);
     return card;
   }
 
-  draw = (n = 1) =>
-    Array(Number.parseInt(n)).fill(null).map(this.drawCard);
+  draw(n = 1) {
+    return Array(Number.parseInt(n)).fill(null).map(this.drawCard);
+  }
 }
 
 module.exports = Deck;

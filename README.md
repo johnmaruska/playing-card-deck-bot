@@ -13,3 +13,8 @@ of playing cards.
 
 `!<command> <opts> ! example comment` to add a reason to any command. Nice for
 tracking when a lot is happening.
+
+
+## TODO:
+
+- separate decks for separate channels (singleton rn)
